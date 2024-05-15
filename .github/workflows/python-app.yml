@@ -42,6 +42,7 @@ jobs:
       with:
         scheme: semver
         increment: patch
+        use_api: true
 
     - name: release
       uses: actions/create-release@v1
