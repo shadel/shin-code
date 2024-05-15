@@ -377,12 +377,13 @@ class buffshare:
             if stt >= int(self.soshare):
                 break
 
-
+shinsad = 0
 class FacebookMain:
 
-    def __init__(self, proxy: str = None) -> None:
+    def __init__(self,stt, proxy: str = None) -> None:
         self.buffsuccess = 0
         self.bufferror = 0
+        self.stt = stt
         self.__client           = requests.Session()
         if proxy != None and ':' in proxy:
             proxies = {
@@ -470,7 +471,7 @@ class FacebookMain:
             pass
         return False, "Cookie die"
 
-    def view_live(self,id,cookie,tree,thongtin,link: str,soview,delay,stt,buffsuccess,bufferror):
+    def view_live(self,id,cookie,tree,thongtin,link: str,soview,delay,status):
         try:
             data = {    
                 'd': '{"pps":{"m":true,"pf":3368,"s":"playing","sa":2757389},"ps":{"m":true,"pf":13608,"s":"playing","sa":2757389},"si":"f15a9d1e26e924","so":"tahoe::topic_live","vi":"' + link + '","tk":"8Qv0Li7gMFJ5BBFyb1m6yBHLCpEUYQ1eOTCdZrxLR1Y1myQk+aSMWGOI+1BZoJCHIcDB2DEdv0JISR+KBV034w==","ls":true}',
@@ -481,42 +482,81 @@ class FacebookMain:
                 'lsd': self.lsdFacebook,
             }
             response = self.__client.post('https://www.facebook.com/video/unified_cvc/', data).text
-            
+            print(response)
             if "LIVE" in response: 
-                buffsuccess += 1
-                label1 = tk.Label(thongtin, text=f"{buffsuccess}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
-                label1.place(x=85,y=35)
-        except: pass
-def main(id,cookie, tree,thongtin,link,soview,delay,stt,buffsuccess,bufferror):
-    fb = FacebookMain()
+                
+                with open('statusview.txt','a') as f:
+                    f.write(f'{id} {cookie} success\n')
+                    f.close()
+                return True, 'done'
+
+        except:pass
+        return False,'die'
+stt = 0
+def main(id,cookie, tree,thongtin,link,soview,delay,status):
+    global stt
+    fb = FacebookMain(stt)
     if fb.addCookie(cookie)[0] == True:
-        fb.view_live(id,cookie,tree,thongtin,link,soview,delay,stt,buffsuccess,bufferror)
-        
-def threadviewlive(tree,thongtin,link,soview,delay):
-    buffsuccess = 0
-    bufferror = 0
+        stt = fb.view_live(id,cookie,tree,thongtin,link,soview,delay,status)
+        print(stt)
+def threadviewlive(tree,thongtin,link,soview,timeview,delay):
     stt = 0
     import time
     start_time = time.time()
     with open("cookiepage.txt", 'r', encoding='utf-8') as ff:
         cookie_liness = ff.readlines()
-    for i in range(int(soview)):
-        tree.insert("", "end", values=(i,cookie_liness[i].split()[0],cookie_liness[i].split()[1],link,f'{i}/{soview}',f'Đang Chạy View Live'))
+    idacc = []
     while True:
+        idpage = []
+        status = open('statusview.txt','w') 
         with open("cookiepage.txt", 'r', encoding='utf-8') as f:
             cookie_lines = f.readlines()
             for i in range(int(soview)):
                 cookie = cookie_lines[i].strip().split()[1]
                 id =  cookie_lines[i].strip().split()[0]
+                idacc.append(id)
                 stt += 1
-                threading.Thread(target=main, args=(id,cookie, tree,thongtin,link,soview,delay,stt,buffsuccess,bufferror),).start()
+                threading.Thread(target=main, args=(id,cookie, tree,thongtin,link,soview,delay,status),).start()
+        sleep(5)
+        with open('statusview.txt','r') as f:
+            status = f.readlines()
+        success = 0
+        errorr = 0
+        for i in range( len(status)):
+            if 'success' in status[i].split():
+                success += 1
+                idpage.append(status[i].split()[0])
+                tree.insert("", "end", values=(i+1,status[i].split()[0],status[i].split()[1],link,f'{i+1}/{soview}',f'Buff Thành Công'))
+
+        set_bien1 = set(idacc)
+        set_bien2 = set(idpage)
+        error = set_bien1 - set_bien2
+        error = list(error)
+    
+        for j in range(len(error)):
+            for k in range(len(cookie_lines)):
+                if (error[j] in cookie_lines[k].split()) == True:
+                    tree.insert("", "end", values=(i+j+2,error[j],cookie_lines[k].split()[1],link,f'{i+j+2}/{soview}',f'Buff Thất Bại'))
+                    errorr += 1
+        label1 = tk.Label(thongtin, text=f"{success}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
+        label1.place(x=85,y=35)
+        label1 = tk.Label(thongtin, text=f"{errorr}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
+        label1.place(x=285,y=35)
         elapsed_time = time.time() - start_time
-        if elapsed_time >= int(delay) * 60:
+        if elapsed_time >= int(timeview) * 60:
             msg_box = tk.messagebox.showinfo(
                 "Thông Báo",
-                f"Đã buff xong {soview} view thời gian {delay} phút",
+                f"Đã buff xong {soview} view thời gian {timeview} phút",
             )
             break
-        time.sleep(30)
+        
+        delay1 = tree.insert("", "end", values=('','','','','','',int(delay)))
+
+        for ii in range(int(delay)):
+            tree.item(delay1, values=(i+j+3,'','','','','',int(delay)-ii))
+            sleep(1)
+        tree.delete(delay1)
+        for item_id in tree.get_children():
+            tree.delete(item_id)
 
 

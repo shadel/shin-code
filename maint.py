@@ -127,10 +127,10 @@ class giaodien():
         sleep(2)
         response_json = response.json()
         try:
-            self.getid = response_json['id']
+            getid = response_json['id']
         except:
             print('Link sai hoặc bài viết chưa công khai')
-        gop.threadviewlive(self.thanhchinhbuffview,self.thongtinview,self.getid,self.soviewlive.get(),self.dllayview.get())
+        gop.threadviewlive(self.thanhchinhbuffview,self.thongtinview,getid,self.soviewlive.get(),self.timeview.get(),self.dllayview.get())
     
     def threadshareao(self):
         for _ in range(1):
@@ -247,24 +247,9 @@ class giaodien():
         self.cmtbangpage()
         self.shareao()
         self.viewlivestream()
-        from datetime import date
-
-        # calling the today
-        # function of date class
-        today = date.today()
-        if ((today)  == date(2024, 5,16)) == True:
-            msg_box = tk.messagebox.showinfo(
-                "Cảnh Báo",
-                f"Hết Thời Gian Test Tool",
-                icon="warning",
-            )
-            os.remove('gop.py')
-            os.remove('maint.py')
-            os.remove('api.py')
-            exit()
-            
         self.root.mainloop()
-     
+        
+    
     
     def cookieortokenpage(self):
         global context_menu
@@ -407,28 +392,35 @@ class giaodien():
         self.nhapycau.pack_propagate(False)
         self.nhapycau.configure(width = 1100, height = 50  )
         self.nhapycau.place(x=0,y=0)
-        
         label = tk.Label(self.nhapycau, text="Input Link Tus: ",fg='white',bg='#708090', font=("Arial", 13))
         label.place(x=0,y=10)
 
         label = tk.Label(self.nhapycau, text="Input Số View Buff: ",fg='white',bg='#708090', font=("Arial", 13))
-        label.place(x=400,y=10)
+        label.place(x=275,y=10)
 
-        label = tk.Label(self.nhapycau, text="Input Delay: ",fg='white',bg='#708090', font=("Arial", 13))
-        label.place(x=650,y=10)
+        label = tk.Label(self.nhapycau, text="Time(M): ",fg='white',bg='#708090', font=("Arial", 13))
+        label.place(x=510,y=10)
+
+        label = tk.Label(self.nhapycau, text="Input Delay(S): ",fg='white',bg='#708090', font=("Arial", 13))
+        label.place(x=675,y=10)
 
         self.linktusview = tk.StringVar()
-        inputlink = tk.Entry(self.nhapycau,textvariable=self.linktusview, width=35, bd =0, font=('Arial 10'), borderwidth=2, relief="solid")
+        inputlink = tk.Entry(self.nhapycau,textvariable=self.linktusview, width=20, bd =0, font=('Arial 10'), borderwidth=2, relief="solid")
         inputlink.pack(padx=5, pady=5)
         inputlink.place(x=125,y=13, height=20)
 
-        self.soviewlive = tk.StringVar()
+        self.soviewlive= tk.StringVar()
         Thread = tk.Spinbox(self.nhapycau, from_=0, to=10000000000000,width=10,
-                                textvariable = self.soviewlive).place(x=550,y=13)
+                                textvariable = self.soviewlive).place(x=425,y=13)
+        
+        self.timeview = tk.StringVar()
+        Thread = tk.Spinbox(self.nhapycau, from_=0, to=10000000000000,width=10,
+                                textvariable = self.timeview).place(x=590,y=13)
 
         self.dllayview = tk.StringVar()
         Thread = tk.Spinbox(self.nhapycau, from_=0, to=10000000000000,width=10,
-                                textvariable = self.dllayview).place(x=750,y=13)
+                                textvariable = self.dllayview).place(x=795,y=13)
+        
 
         buttonrun =  tk.Button(self.nhapycau,  text='Run', command=self.threadviewlive,
                                 fg='black',
@@ -716,7 +708,7 @@ class giaodien():
         label = tk.Label(self.nhapycau, text="Input Link Tus: ",fg='white',bg='#708090', font=("Arial", 13))
         label.place(x=0,y=10)
 
-        label = tk.Label(self.nhapycau, text="Input Số Like Buff: ",fg='white',bg='#708090', font=("Arial", 13))
+        label = tk.Label(self.nhapycau, text="Input Số Cmt Buff: ",fg='white',bg='#708090', font=("Arial", 13))
         label.place(x=400,y=10)
 
         label = tk.Label(self.nhapycau, text="Input Delay: ",fg='white',bg='#708090', font=("Arial", 13))
@@ -784,7 +776,7 @@ class giaodien():
 
         label1 = tk.Label(self.thongtincmt, text=f"Số Cmt Có",fg='#00ffff',bg='#708090', font=("Times New Roman", 15))
         label1.place(x=620,y=0)
-        label1 = tk.Label(self.thongtincmt, text=f"Số Page",fg='#ffff00',bg='#708090', font=("Times New Roman", 15))
+        label1 = tk.Label(self.thongtincmt, text=f"Số Acc",fg='#ffff00',bg='#708090', font=("Times New Roman", 15))
         label1.place(x=450,y=0)
         label1 = tk.Label(self.thongtincmt, text=f"Buff Success",fg='#7fff00',bg='#708090', font=("Times New Roman", 15))
         label1.place(x=50,y=0)
@@ -816,8 +808,8 @@ class giaodien():
         self.thanhchinhbuffcmt.column("two", width=50)
         
         self.thanhchinhbuffcmt.heading("one", text="Index", anchor=tk.W)
-        self.thanhchinhbuffcmt.heading("three", text="ID Page", anchor=tk.W)
-        self.thanhchinhbuffcmt.heading("four", text="Cookie Page", anchor=tk.W)
+        self.thanhchinhbuffcmt.heading("three", text="ID Acc", anchor=tk.W)
+        self.thanhchinhbuffcmt.heading("four", text="Cookie Acc", anchor=tk.W)
         self.thanhchinhbuffcmt.heading("five", text="Link Tus", anchor=tk.W)
         self.thanhchinhbuffcmt.heading("eight", text="NDung Cmt", anchor=tk.W)
         self.thanhchinhbuffcmt.heading("six", text="Tiến Độ", anchor=tk.W)
@@ -1076,5 +1068,16 @@ class giaodien():
         label1 = tk.Label(self.thongtincookie1, text=f"Số Page",fg='#ffff00',bg='#708090', font=("Times New Roman", 15))
         label1.place(x=500,y=0)
 
+from datetime import date
 
-giaodien().tab()
+# calling the today
+# function of date class
+today = date.today()
+if ((today)  == date(2024, 5,18)) == False:
+    giaodien().tab()
+else:
+    msg_box = tk.messagebox.showinfo(
+        "Cảnh Báo",
+        f"Hết Thời Gian Test Tool",
+        icon="warning",
+    )
