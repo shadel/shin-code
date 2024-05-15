@@ -33,6 +33,7 @@ jobs:
       uses: JackMcKew/pyinstaller-action-windows@main
       with:
         spec: maint.spec
+        path: .
 
     - uses: actions/upload-artifact@v2
       with:
