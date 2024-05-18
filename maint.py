@@ -11,6 +11,8 @@ import os
 import gop
 import threading
 import subprocess
+from tkinter import Toplevel, Label
+
 class giaodien():
     def __init__(self) -> None:
         self.nameacc = []
@@ -72,7 +74,7 @@ class giaodien():
             thread = threading.Thread(target=self.getnewtoken)
             thread.start()
     def runlikepage(self):
-        gop.tool().bufflike(self.thanhchinhbufflike,self.linktuslike.get(),self.soview.get(),self.dllay.get())
+        gop.tool().bufflike(self.thanhchinhbufflike, self.thongtin,self.linktuslike.get(),self.soview.get(),self.dllay.get())
     def runcmtpage(self):
         with open('cmt.txt','r',encoding='utf-8') as f:
             f = f.readlines()
@@ -188,6 +190,119 @@ class giaodien():
         label.after(100, lambda: self.toggle_color(label, colors, idx))
     def show_context_menu(self,event):
         context_menu.post(event.x_root, event.y_root)
+    def deletecookie(self):
+        selected_items = self.thongtinacc.selection()
+        with open('acc.txt','r') as f:
+            xetacc = f.readlines()
+        with open('acc.txt','w') as f:
+            f.close()
+        with open('nameacc.txt','r',encoding='utf-8') as f:
+            nameacc = f.readlines()
+        with open('nameacc.txt','w',encoding='utf-8') as f:
+            f.close()
+        namedetele = []
+        iddetele = []
+        for item in selected_items:
+            # Lưu giá trị của các mục đã chọn
+            current_values = self.thongtinacc.item(item, 'values')
+            self.thongtinacc.delete(item)
+            namedetele.append(current_values[1])
+            iddetele.append(current_values[2])
+        for i in range(len(xetacc)):
+            if (xetacc[i].split()[0] in iddetele) == False:
+                with open('acc.txt','a') as f:
+                    try:
+                        f.write(f'{xetacc[i].split()[0]} {xetacc[i].split()[1]} {xetacc[i].split()[2]} {xetacc[i].split()[3]}\n')
+                        f.close()
+                    except:
+                        f.write(f'{xetacc[i].split()[0]} {xetacc[i].split()[1]} {xetacc[i].split()[2]} \n')
+                        f.close()
+        for i in range(len(nameacc)):
+            if (nameacc[i].split()[0] in iddetele) == False:
+                with open('nameacc.txt','a',encoding='utf-8') as f:
+                    try:
+                        f.write(f'{nameacc[i].split()[0]} {nameacc[i].split()[1]} {nameacc[i].split()[2]} {xetacc[i].split()[3]}\n')
+                        f.close()
+                    except:
+                        f.write(f'{nameacc[i].split()[0]} {nameacc[i].split()[1]} {nameacc[i].split()[2]} \n')
+                        f.close()
+
+    def proxy(self):
+        new_window = Toplevel(self.showdevice,bg='#708090')
+        new_window.title("Proxy")
+        new_window.geometry("300x75")
+
+
+        label = Label(new_window, text="Proxy: ",fg='white',bg='#708090', font=("Arial", 13))
+        label.place(x=10,y=10)
+
+        self.proxys= tk.StringVar()
+        inputlink = tk.Entry(new_window,textvariable=self.proxys, width=30, bd =0, font=('Arial 10'), borderwidth=2, relief="solid")
+        inputlink.place(x=75,y=10, height=23)
+        def saveproxy():
+            listproxy = []
+            with open('acc.txt','r') as f:
+                saveprx = f.readlines()
+            with open('acc.txt','w') as f:
+                f.close()
+            selected_item = self.thongtinacc.selection()
+            for item_id in selected_item:
+                current_values = self.thongtinacc.item(item_id, 'values')
+                print(current_values)
+                self.thongtinacc.item(item_id, values=(current_values[0], current_values[1], current_values[2], current_values[3], current_values[4], current_values[5], current_values[6],self.proxys.get()))
+                listproxy.append( f'{current_values[2]}')
+            for i in range(len(saveprx)):
+                print(saveprx[i])
+                if saveprx[i].split()[0] in listproxy:
+                    with open('acc.txt','a') as f:
+                        try:
+                            f.write(f'{saveprx[i].split()[0]} {saveprx[i].split()[1]} {saveprx[i].split()[2]} {self.proxys.get()}\n')
+                        except:
+                            f.write(f'{saveprx[i].split()[0]} {saveprx[i].split()[1]} {self.proxys.get()}\n')
+                        f.close()
+                else:
+                    with open('acc.txt','a') as f:
+                        try:
+                            f.write(f'{saveprx[i].split()[0]} {saveprx[i].split()[1]} {saveprx[i].split()[2]} \n')
+                        except:
+                            f.write(f'{saveprx[i].split()[0]} {saveprx[i].split()[1]}  \n')
+                        f.close()
+            new_window.destroy()
+        def checkproxy1():
+            proxy = self.proxys.get()
+            try:
+                res = requests.get("http://ipinfo.io/json",
+                                proxies={'http':proxy,
+                                            'https': proxy})
+            except:
+                pass
+            if res.status_code == 200:
+                msg_box = tk.messagebox.showinfo(
+                    "Thông Báo",
+                    f"Proxy {proxy} LIVE",
+                )
+            else:
+                msg_box = tk.messagebox.showinfo(
+                    "Thông Báo",
+                    f"Proxy {proxy} DIE",
+                )
+        def threadcheckproxy():
+            for _ in range(1):
+                thread = threading.Thread(target=checkproxy1)
+                thread.start()
+        buttonstop =  tk.Button(new_window,  text='Save', 
+                                command = saveproxy,
+                                fg='black',
+                                bg='green',
+                                height= 1, 
+                                width=10,).place(x=210,y=40)
+        checkproxy = tk.Button(new_window,  text='Check Proxy', 
+                                command = threadcheckproxy,
+                                fg='black',
+                                bg='cyan',
+                                height= 1, 
+                                width=10,).place(x=100,y=40)
+        
     def tab(self):
         self.showlistreg = tk.Frame(self.tab1,bg='#708090',highlightbackground='black',
                     highlightthickness=2)
@@ -977,14 +1092,15 @@ class giaodien():
         self.thongtinacc = ttk.Treeview(self.thongtincookie, yscrollcommand=scrollbar.set) 
         self.thongtinacc.configure(style="Treeview", height=60)
         self.thongtinacc.pack(expand=True, fill="both")
-        self.thongtinacc["columns"] = ("one", "two", "three", "four", "five", 'six','seven')
+        self.thongtinacc["columns"] = ("one", "two", "three", "four", "five", 'six','seven','eight')
         self.thongtinacc.column("one", width=50)
-        self.thongtinacc.column("two", width=150)
+        self.thongtinacc.column("two", width=100)
         self.thongtinacc.column("three", width=150)
         self.thongtinacc.column("four", width=200)
         self.thongtinacc.column("five", width=200)
         self.thongtinacc.column("six", width=100)
-        self.thongtinacc.column("seven", width=150)
+        self.thongtinacc.column("seven", width=100)
+        self.thongtinacc.column("eight", width=100)
         
         self.thongtinacc.heading("one", text="Index", anchor=tk.W)
         self.thongtinacc.heading("two", text="Name Acc", anchor=tk.W)
@@ -993,13 +1109,15 @@ class giaodien():
         self.thongtinacc.heading("five", text="Token Acc", anchor=tk.W)
         self.thongtinacc.heading("six", text="Số Page", anchor=tk.W)
         self.thongtinacc.heading("seven", text="Status", anchor=tk.W)
+        self.thongtinacc.heading("eight", text="Proxy", anchor=tk.W)
         
         self.thongtinacc['show'] = 'headings'
         context_menu = tk.Menu(self.thongtinacc, tearoff=0)
         context_menu.add_command(label="Paste",command=self.threadpaste)
-        context_menu.add_command(label="Copy", )
+        context_menu.add_command(label="Delete", command=self.deletecookie)
         context_menu.add_command(label="Reset",command=self.reset )
         context_menu.add_command(label="Getnewtoken",command=self.threadnewtoken )
+        context_menu.add_command(label="Proxy",command=self.proxy)
         self.thongtinacc.bind("<Button-3>", self.show_context_menu) 
         scrollbar.config(command=self.thongtinacc.yview)
         self.thongtinacc.config(yscrollcommand=scrollbar.set)
@@ -1038,12 +1156,23 @@ class giaodien():
             for i in range(len(showacc)):
                 try:
                     soacc += int(showacc[i].split()[2])
-
-                    self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],showacc[i].split()[2],'Token Cu'))
+                    try:
+                        try:
+                            self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],showacc[i].split()[2],'Token Cu',showacc[i].split()[3]))
+                        except:
+                            self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],showacc[i].split()[2],'Token Cu',showacc[i].split()[2]))
+                    except:
+                        self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],showacc[i].split()[2],'Token Cu'))
                     label1 = tk.Label(self.thongtincookie1, text=f"{soacc}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
                     label1.place(x=530,y=35)
                 except:
-                    self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],' ','Token Cu'))
+                    try:
+                        try:
+                            self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],' ','Token Cu',showacc[i].split()[3]))
+                        except:
+                            self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],' ','Token Cu',showacc[i].split()[2]))
+                    except:
+                        self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],' ','Token Cu'))
                     label1 = tk.Label(self.thongtincookie1, text=f"0",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
                     label1.place(x=530,y=35)
             label1 = tk.Label(self.thongtincookie1, text=f"{len(showacc)}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
@@ -1073,7 +1202,7 @@ from datetime import date
 # calling the today
 # function of date class
 today = date.today()
-if ((today)  == date(2024, 5,18)) == False:
+if ((today)  == date(2024, 5,19)) == False:
     giaodien().tab()
 else:
     msg_box = tk.messagebox.showinfo(

@@ -11,6 +11,8 @@ class tool:
     def __init__(self) -> None:
         self.lckie = []
         self.cookieprof = []
+        self.success = 0
+        self.error = 0
         self.idp = []
         self.stt = 0
         with open(f'cookiepage.txt', 'r') as f:
@@ -64,7 +66,8 @@ class tool:
             'sec-fetch-site': 'same-origin',
             'x-requested-with': 'XMLHttpRequest',
         }
-    def bufflike(self,tree,link,soview,dlay):
+    def bufflike(self,tree,thongtin,link,soview,dlay):
+        import requests, json, re, base64, uuid, random, os
         if len(self.lckie) >= int(soview):
         
             data = {
@@ -80,6 +83,15 @@ class tool:
                 print('Link sai hoặc bài viết chưa công khai')
             for i in range(int(soview)):
                 try:
+                    try:
+                        proxy = self.ff[self.i].split()[3]
+                        proxy = {
+                            "http": f"http://{proxy}",
+                            "https": f"http://{proxy}"
+                        }
+                        
+                    except:
+                        proxy = {}
                     self.cookieprofile = {
                         'sb': self.lckie[i].split('sb=')[1].split(';')[0],
                         'datr': self.lckie[i].split('datr=')[1].split(';')[0],
@@ -90,11 +102,14 @@ class tool:
                         'i_user': self.lckie[i].split('i_user=')[1].split(';')[0],
                     }
                     print(self.cookieprofile)
-                    url = requests.get(f'https://mbasic.facebook.com/{self.getid}',headers=self.headers,cookies=self.cookieprofile).text
+                    url = requests.get(f'https://mbasic.facebook.com/{self.getid}',headers=self.headers,cookies=self.cookieprofile,proxies=proxy).text
 
                     Like = '/a/like.php?'+url.split('/a/like.php?')[1].split('"')[0].replace("amp;", '')
-                    re = requests.get('https://mbasic.facebook.com/'+Like, headers=self.headers, cookies=self.cookieprofile)
+                    re = requests.get('https://mbasic.facebook.com/'+Like, headers=self.headers, cookies=self.cookieprofile,proxies=proxy)
                     tree.insert("", "end", values=(i,self.ff[i].split()[0],self.ff[i].split()[1],self.getid,f'{i+1}/{soview}','Buff Success'))
+                    self.success += 1
+                    label1 = tk.Label(thongtin, text=f"{self.success}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
+                    label1.place(x=85,y=35)
                     delay = tree.insert("", "end", values=('','','','','','',int(dlay)))
 
                     for ii in range(int(dlay)):
@@ -103,6 +118,13 @@ class tool:
                     tree.delete(delay)
                 except:
                     tree.insert("", "end", values=(i,self.ff[i].split()[0],self.ff[i].split()[1],self.getid,f'{i+1}/{soview}','Buff That Bai'))
+                    self.error += 1
+                    label1 = tk.Label(thongtin, text=f"{self.error}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
+                    label1.place(x=285,y=35)
+            msg_box = tk.messagebox.showinfo(
+                    "Thông Báo",
+                    f"Đã buff xong {soview} Like",
+                )
         else:
             tk.messagebox.showinfo(title='Lỗi', message=f'Số Like Buff Phải Nhỏ Hơn Số Page Có',)
 class buffcmt:
@@ -260,7 +282,10 @@ class buffcmt:
         print(socmt)
         for i in range(int(socmt)):
             cmt()
-        print('buff xong')
+        msg_box = tk.messagebox.showinfo(
+                "Thông Báo",
+                f"Đã buff xong {socmt} Cmt",
+            )
 
     def update_cookies(self):
         try:
@@ -375,6 +400,11 @@ class buffshare:
                 sleep(1)
             tree.delete(delay)
             if stt >= int(self.soshare):
+                msg_box = tk.messagebox.showinfo(
+                    "Thông Báo",
+                    f"Đã buff xong {soshare} Share",
+                )
+                break
                 break
 
 shinsad = 0
