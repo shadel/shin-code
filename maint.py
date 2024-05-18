@@ -263,9 +263,12 @@ class giaodien():
                 else:
                     with open('acc.txt','a') as f:
                         try:
-                            f.write(f'{saveprx[i].split()[0]} {saveprx[i].split()[1]} {saveprx[i].split()[2]} \n')
+                            f.write(f'{saveprx[i].split()[0]} {saveprx[i].split()[1]} {saveprx[i].split()[2]} {saveprx[i].split()[3]}\n')
                         except:
-                            f.write(f'{saveprx[i].split()[0]} {saveprx[i].split()[1]}  \n')
+                            try:
+                                f.write(f'{saveprx[i].split()[0]} {saveprx[i].split()[1]} {saveprx[i].split()[3]}\n')
+                            except:
+                                f.write(f'{saveprx[i].split()[0]} {saveprx[i].split()[1]} {saveprx[i].split()[2]}\n')
                         f.close()
             new_window.destroy()
         def checkproxy1():
@@ -275,7 +278,10 @@ class giaodien():
                                 proxies={'http':proxy,
                                             'https': proxy})
             except:
-                pass
+                msg_box = tk.messagebox.showinfo(
+                    "Thông Báo",
+                    f"Proxy {proxy} DIE",
+                )
             if res.status_code == 200:
                 msg_box = tk.messagebox.showinfo(
                     "Thông Báo",
@@ -1160,7 +1166,7 @@ class giaodien():
                         try:
                             self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],showacc[i].split()[2],'Token Cu',showacc[i].split()[3]))
                         except:
-                            self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],showacc[i].split()[2],'Token Cu',showacc[i].split()[2]))
+                            self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],showacc[i].split()[2],'Token Cu',' '))
                     except:
                         self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],showacc[i].split()[2],'Token Cu'))
                     label1 = tk.Label(self.thongtincookie1, text=f"{soacc}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
@@ -1170,7 +1176,7 @@ class giaodien():
                         try:
                             self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],' ','Token Cu',showacc[i].split()[3]))
                         except:
-                            self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],' ','Token Cu',showacc[i].split()[2]))
+                            self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],' ','Token Cu',' '))
                     except:
                         self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],' ','Token Cu'))
                     label1 = tk.Label(self.thongtincookie1, text=f"0",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))

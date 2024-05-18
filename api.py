@@ -126,7 +126,7 @@ class api:
         with open('access_tokenacc.txt','r') as f:
             tokenacc = f.readlines()
             try:
-                get_tokenpage = requests.get(f'https://graph.facebook.com/v12.0/me/accounts?fields=access_token&limit=200&access_token={tokenacc[self.i]}',proxies=proxy).json()['data']
+                get_tokenpage = requests.get(f'https://graph.facebook.com/v12.0/me/accounts?fields=access_token&limit=200&access_token={tokenacc[self.i]}',).json()['data']
             except:
                 tk.messagebox.showinfo(title='Lỗi', message=f"Get Lại Token ID {self.ck.split('c_user=')[1].split(';')[0]}",)
             for i in range(len(get_tokenpage)):
@@ -180,7 +180,10 @@ class api:
 
         with open('acc.txt','r') as f:
             f = f.readlines()
-        self.saveaccandpage += f'{f[self.i].split()[0]} {f[self.i].split()[1]} {len(self.idpage)}\n'
+        try:
+            self.saveaccandpage += f'{f[self.i].split()[0]} {f[self.i].split()[1]} {len(self.idpage)} {lckie[self.i].split()[3]}\n'
+        except:
+            self.saveaccandpage += f'{f[self.i].split()[0]} {f[self.i].split()[1]} {len(self.idpage)}\n'
         if self.i == len(f)-1:
             os.remove('acc.txt')
             with open('acc.txt','w') as f:
@@ -218,7 +221,7 @@ class api:
                 
             except:
                 proxy = {}
-            re = requests.get(f'https://testmien.x10.bz/api/api404team/16token.php?cookie={self.ck}&type=5',proxies=proxy).json()
+            re = requests.get(f'https://testmien.x10.bz/api/api404team/16token.php?cookie={self.ck}&type=5',).json()
             # try:
             name = re['name']
             uid = re['uid']
@@ -278,12 +281,12 @@ class api:
             thread.start()
 
     def threadgetpage(self,tree,thongtinpage):
-        # try:
+        try:
             with open('acc.txt','r') as f:
                 f = f.readlines()
             for self.i in range(len(f)):
                 thread = threading.Thread(target=self.savepage(tree,thongtinpage))
                 thread.start()
-        # except:
-        #     tk.messagebox.showinfo(title='Lỗi', message='Không Có Cookie',)
+        except:
+            tk.messagebox.showinfo(title='Lỗi', message='Không Có Cookie',)
         
