@@ -1208,7 +1208,7 @@ from datetime import date
 # calling the today
 # function of date class
 today = date.today()
-if ((today)  == date(2024, 5,19)) == False:
+if ((today)  == date(2024, 5,20)) == False:
     giaodien().tab()
 else:
     msg_box = tk.messagebox.showinfo(
