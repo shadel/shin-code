@@ -168,6 +168,7 @@ class giaodien():
         try:
             os.remove('cookiepage.txt')
             os.remove('tokenpage.txt')
+            os.remove('lenpage.txt')
             for item_id in self.getpageeee.get_children():
                 self.getpageeee.delete(item_id)
 
@@ -239,10 +240,11 @@ class giaodien():
         self.proxys= tk.StringVar()
         inputlink = tk.Entry(new_window,textvariable=self.proxys, width=30, bd =0, font=('Arial 10'), borderwidth=2, relief="solid")
         inputlink.place(x=75,y=10, height=23)
+        with open('acc.txt','r') as f:
+                saveprx = f.readlines()
         def saveproxy():
             listproxy = []
-            with open('acc.txt','r') as f:
-                saveprx = f.readlines()
+            
             with open('acc.txt','w') as f:
                 f.close()
             selected_item = self.thongtinacc.selection()
@@ -268,30 +270,34 @@ class giaodien():
                             try:
                                 f.write(f'{saveprx[i].split()[0]} {saveprx[i].split()[1]} {saveprx[i].split()[3]}\n')
                             except:
-                                f.write(f'{saveprx[i].split()[0]} {saveprx[i].split()[1]} {saveprx[i].split()[2]}\n')
+                                try:
+                                    f.write(f'{saveprx[i].split()[0]} {saveprx[i].split()[1]} {saveprx[i].split()[2]}\n')
+                                except:
+                                    f.write(f'{saveprx[i].split()[0]} {saveprx[i].split()[1]}\n')
                         f.close()
             new_window.destroy()
         def checkproxy1():
             proxy = self.proxys.get()
             try:
-                res = requests.get("http://ipinfo.io/json",
-                                proxies={'http':proxy,
-                                            'https': proxy})
+                res = requests.get("https://www.facebook.com/",
+                                proxies={'http':f'http://{proxy}',
+                                            'https': f'http://{proxy}'})
+                if res.status_code == 200:
+                    msg_box = tk.messagebox.showinfo(
+                        "Thông Báo",
+                        f"Proxy {proxy} LIVE",
+                    )
+                else:
+                    msg_box = tk.messagebox.showinfo(
+                        "Thông Báo",
+                        f"Proxy {proxy} DIE",
+                    )
             except:
                 msg_box = tk.messagebox.showinfo(
                     "Thông Báo",
                     f"Proxy {proxy} DIE",
                 )
-            if res.status_code == 200:
-                msg_box = tk.messagebox.showinfo(
-                    "Thông Báo",
-                    f"Proxy {proxy} LIVE",
-                )
-            else:
-                msg_box = tk.messagebox.showinfo(
-                    "Thông Báo",
-                    f"Proxy {proxy} DIE",
-                )
+           
         def threadcheckproxy():
             for _ in range(1):
                 thread = threading.Thread(target=checkproxy1)
@@ -420,14 +426,15 @@ class giaodien():
                 nameacc = f.readlines()
             with open('cookiepage.txt','r') as f:
                 page = f.readlines()
-          
+            with open('lenpage.txt','r') as f:
+                lenpage = f.readlines()
             for i in range(len(page)):
 
                 try:
                     
                     self.getpageeee.insert("", "end", values=(i+1,nameacc[chuyenname],showacc[chuyenname].split()[0],page[i].split()[0],page[i].split()[1],' ','Get_Lai_Token'))
-                    soacc += int(showacc[chuyenname].split()[2])
-                    if i+1 == int(showacc[chuyenname].split()[2]):
+                    soacc += int(lenpage[chuyenname])
+                    if i+1 == int(lenpage[chuyenname]):
                         chuyenname += 1
                     label1 = tk.Label(self.thongtincookiepage1, text=f"{len(showacc)}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
                     label1.place(x=120,y=20)
@@ -567,7 +574,11 @@ class giaodien():
         try:
             with open('tokenpage.txt','r') as f:
                 showacc = f.readlines()
-            label1 = tk.Label(self.thongtinview, text=f"{len(showacc)}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
+            with open('lenpage.txt','r') as f:
+                lenpage = f.readlines()
+            for i in range(len(showacc)):
+                soacc += lenpage[i]
+            label1 = tk.Label(self.thongtinview, text=f"{soacc}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
             label1.place(x=530,y=35)
         except:
             
@@ -693,7 +704,11 @@ class giaodien():
         try:
             with open('tokenpage.txt','r') as f:
                 showacc = f.readlines()
-            label1 = tk.Label(self.thongtinshare, text=f"{len(showacc)}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
+            with open('lenpage.txt','r') as f:
+                lenpage = f.readlines()
+            for i in range(len(showacc)):
+                soacc += lenpage[i]
+            label1 = tk.Label(self.thongtinshare, text=f"{soacc}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
             label1.place(x=530,y=35)
         except:
             
@@ -918,15 +933,16 @@ class giaodien():
         self.thanhchinhbuffcmt = ttk.Treeview(self.framerun, yscrollcommand=scrollbar.set) 
         self.thanhchinhbuffcmt.configure(style="Treeview", height=60)
         self.thanhchinhbuffcmt.pack(expand=True, fill="both")
-        self.thanhchinhbuffcmt["columns"] = ("one",  "three", "four", "five",'eight', 'six','seven','two')
+        self.thanhchinhbuffcmt["columns"] = ("one",  "three", "four", "five",'eight', 'six','seven','two','proxy')
         self.thanhchinhbuffcmt.column("one", width=50)
         self.thanhchinhbuffcmt.column("three", width=150)
-        self.thanhchinhbuffcmt.column("four", width=200)
-        self.thanhchinhbuffcmt.column("five", width=150)
+        self.thanhchinhbuffcmt.column("four", width=150)
+        self.thanhchinhbuffcmt.column("five", width=100)
         self.thanhchinhbuffcmt.column("eight", width=200)
         self.thanhchinhbuffcmt.column("six", width=100)
         self.thanhchinhbuffcmt.column("seven", width=100)
         self.thanhchinhbuffcmt.column("two", width=50)
+        self.thanhchinhbuffcmt.column("proxy", width=100)
         
         self.thanhchinhbuffcmt.heading("one", text="Index", anchor=tk.W)
         self.thanhchinhbuffcmt.heading("three", text="ID Acc", anchor=tk.W)
@@ -936,6 +952,7 @@ class giaodien():
         self.thanhchinhbuffcmt.heading("six", text="Tiến Độ", anchor=tk.W)
         self.thanhchinhbuffcmt.heading("seven", text="Status", anchor=tk.W)
         self.thanhchinhbuffcmt.heading("two", text="Delay(s)", anchor=tk.W)
+        self.thanhchinhbuffcmt.heading("proxy", text="Proxy", anchor=tk.W)
 
         self.thanhchinhbuffcmt['show'] = 'headings'
         # data = [
@@ -1017,9 +1034,11 @@ class giaodien():
         try:
             with open('acc.txt','r') as f:
                 showacc = f.readlines()
+            with open('lenpage.txt','r') as f:
+                lenpage = f.readlines()
             for i in range(len(showacc)):
                 try:
-                    soacc += int(showacc[i].split()[2])
+                    soacc += int(lenpage[i])
 
                     label1 = tk.Label(self.thongtin, text=f"{soacc}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
                     label1.place(x=530,y=35)
@@ -1052,13 +1071,14 @@ class giaodien():
         self.thanhchinhbufflike = ttk.Treeview(self.framerun, yscrollcommand=scrollbar.set) 
         self.thanhchinhbufflike.configure(style="Treeview", height=60)
         self.thanhchinhbufflike.pack(expand=True, fill="both")
-        self.thanhchinhbufflike["columns"] = ("one",  "three", "four", "five", 'six','seven','two')
+        self.thanhchinhbufflike["columns"] = ("one",  "three", "four", "five", 'six','seven','two','proxy')
         self.thanhchinhbufflike.column("one", width=50)
         self.thanhchinhbufflike.column("three", width=150)
-        self.thanhchinhbufflike.column("four", width=300)
-        self.thanhchinhbufflike.column("five", width=200)
+        self.thanhchinhbufflike.column("four", width=250)
+        self.thanhchinhbufflike.column("five", width=100)
         self.thanhchinhbufflike.column("six", width=100)
-        self.thanhchinhbufflike.column("seven", width=150)
+        self.thanhchinhbufflike.column("seven", width=100)
+        self.thanhchinhbufflike.column("proxy", width=200)
         self.thanhchinhbufflike.column("two", width=50)
         
         self.thanhchinhbufflike.heading("one", text="Index", anchor=tk.W)
@@ -1067,6 +1087,7 @@ class giaodien():
         self.thanhchinhbufflike.heading("five", text="Link Tus", anchor=tk.W)
         self.thanhchinhbufflike.heading("six", text="Tiến Độ", anchor=tk.W)
         self.thanhchinhbufflike.heading("seven", text="Status", anchor=tk.W)
+        self.thanhchinhbufflike.heading("proxy", text="Proxy", anchor=tk.W)
         self.thanhchinhbufflike.heading("two", text="Delay(s)", anchor=tk.W)
 
         self.thanhchinhbufflike['show'] = 'headings'
@@ -1152,29 +1173,31 @@ class giaodien():
         self.toggle_color(label1, rainbow_colors, 0)
         self.toggle_color(label, rainbow_colors, 0)
         try:
-            soacc = 0
+            sopage = 0
             with open('acc.txt','r') as f:
                 showacc = f.readlines()
             with open('nameacc.txt','r', encoding='utf-8') as f:
                 nameacc = f.readlines()
             with open('access_tokenacc.txt','r', encoding='utf-8') as f:
                 access_tokenacc = f.readlines()
+            with open('lenpage.txt','r') as f:
+                lenpage = f.readlines()
             for i in range(len(showacc)):
                 try:
-                    soacc += int(showacc[i].split()[2])
+                    sopage += int(lenpage[i])
                     try:
                         try:
-                            self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],showacc[i].split()[2],'Token Cu',showacc[i].split()[3]))
+                            self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],lenpage[i].strip(),'Token Cu',showacc[i].split()[2]))
                         except:
-                            self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],showacc[i].split()[2],'Token Cu',' '))
+                            self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],lenpage[i].strip(),'Token Cu',' '))
                     except:
-                        self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],showacc[i].split()[2],'Token Cu'))
-                    label1 = tk.Label(self.thongtincookie1, text=f"{soacc}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
+                        self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],lenpage[i].strip(),'Token Cu'))
+                    label1 = tk.Label(self.thongtincookie1, text=f"{sopage}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
                     label1.place(x=530,y=35)
                 except:
                     try:
                         try:
-                            self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],' ','Token Cu',showacc[i].split()[3]))
+                            self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],' ','Token Cu',showacc[i].split()[2]))
                         except:
                             self.thongtinacc.insert("", "end", values=(i,nameacc[i],showacc[i].split()[0],showacc[i].split()[1],access_tokenacc[i],' ','Token Cu',' '))
                     except:
@@ -1207,9 +1230,17 @@ from datetime import date
 
 # calling the today
 # function of date class
+re = requests.get('https://anotepad.com/notes/8fc6p68c').text
+key = (re.split('<div class="plaintext ">')[1].split('</div>')[0])
 today = date.today()
-if ((today)  == date(2024, 5,19)) == False:
-    giaodien().tab()
+if ((today)  == date(2024, 5,22)) == False:
+    if key == 'update':
+        msg_box = tk.messagebox.showinfo(
+                    "Thông Báo",
+                    f"Tool Đã Có Phiên Bản Mới",
+                )
+    else:
+        giaodien().tab()
 else:
     msg_box = tk.messagebox.showinfo(
         "Cảnh Báo",

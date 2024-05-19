@@ -84,11 +84,27 @@ class tool:
             for i in range(int(soview)):
                 try:
                     try:
-                        proxy = self.ff[self.i].split()[3]
+                        proxys = self.ff[self.i].split()[2]
                         proxy = {
-                            "http": f"http://{proxy}",
-                            "https": f"http://{proxy}"
+                        "http": f"http://{proxys}",
+                        "https": f"http://{proxys}"
                         }
+                        try:
+                            res = requests.get("https://www.facebook.com/",
+                                            proxies=proxy)
+                            if res.status_code == 200:
+                                proxy = proxy
+                            else:
+                                msg_box = tk.messagebox.showinfo(
+                                    "Thông Báo",
+                                    f"Proxy {proxy} DIE",
+                            )
+            
+                        except:
+                            msg_box = tk.messagebox.showinfo(
+                                "Thông Báo",
+                                f"Proxy {proxy} DIE",
+                            )
                         
                     except:
                         proxy = {}
@@ -106,7 +122,10 @@ class tool:
 
                     Like = '/a/like.php?'+url.split('/a/like.php?')[1].split('"')[0].replace("amp;", '')
                     re = requests.get('https://mbasic.facebook.com/'+Like, headers=self.headers, cookies=self.cookieprofile,proxies=proxy)
-                    tree.insert("", "end", values=(i,self.ff[i].split()[0],self.ff[i].split()[1],self.getid,f'{i+1}/{soview}','Buff Success'))
+                    try:
+                        tree.insert("", "end", values=(i,self.ff[i].split()[0],self.ff[i].split()[1],self.getid,f'{i+1}/{soview}','Buff Success','',self.ff[i].split()[2]))
+                    except:
+                        tree.insert("", "end", values=(i,self.ff[i].split()[0],self.ff[i].split()[1],self.getid,f'{i+1}/{soview}','Buff Success',))
                     self.success += 1
                     label1 = tk.Label(thongtin, text=f"{self.success}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
                     label1.place(x=85,y=35)
@@ -117,7 +136,10 @@ class tool:
                         sleep(1)
                     tree.delete(delay)
                 except:
-                    tree.insert("", "end", values=(i,self.ff[i].split()[0],self.ff[i].split()[1],self.getid,f'{i+1}/{soview}','Buff That Bai'))
+                    try:
+                        tree.insert("", "end", values=(i,self.ff[i].split()[0],self.ff[i].split()[1],self.getid,f'{i+1}/{soview}','Buff That Bai','',self.ff[i].split()[2]))
+                    except:
+                        tree.insert("", "end", values=(i,self.ff[i].split()[0],self.ff[i].split()[1],self.getid,f'{i+1}/{soview}','Buff That Bai'))
                     self.error += 1
                     label1 = tk.Label(thongtin, text=f"{self.error}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
                     label1.place(x=285,y=35)
@@ -139,10 +161,18 @@ class buffcmt:
         self.doick = 1
         # Đọc danh sách cookie từ file
         self.lckie = []
+        self.proxy = []
         with open(f'acc.txt', 'r') as f:
             for line in f.readlines():
                 self.lckie.append(line.strip().split()[1])
+                self.proxy.append(line.strip())
         self.ck = self.lckie[0]
+        print(self.proxy[0].split())
+        try:
+            self.proxys = self.proxy[0].split()[2]
+        except:
+            self.proxys = 0
+
         # cookie đăng nhập facbook
     
         with open(rf'cmt.txt', 'r', encoding='utf-8') as f:
@@ -227,11 +257,40 @@ class buffcmt:
         except:
             print('Link sai hoặc bài viết chưa công khai')
         def cmt():
-
+            print(self.proxy)
             try:
+                if self.proxys == 0:
+                    proxy = {}
+                else:
+                    try:
+                        proxy = {
+                        "http": f"http://{self.proxys}",
+                        "https": f"http://{self.proxys}"
+                        }
+                        try:
+                            res = requests.get("https://www.facebook.com/",
+                                            proxies=proxy)
+                            if res.status_code == 200:
+                                proxy = proxy
+                            else:
+                                msg_box = tk.messagebox.showinfo(
+                                    "Thông Báo",
+                                    f"Proxy {proxy} DIE",
+                            )
+                            proxy = {}
+            
+                        except:
+                            msg_box = tk.messagebox.showinfo(
+                                "Thông Báo",
+                                f"Proxy {proxy} DIE",
+                            )
+                            proxy = {}
+                        
+                    except:
+                        proxy = {}
             #cmt bài viết cố định
                 id = self.getid
-                r = requests.get(f'https://mbasic.facebook.com/{id}', cookies=self.cookies, headers=self.headers).url
+                r = requests.get(f'https://mbasic.facebook.com/{id}', cookies=self.cookies, headers=self.headers,proxies=proxy).url
 
                 accest = requests.get(r, cookies=self.cookies, headers=self.headers).text
                 nodecmt = 'https://mbasic.facebook.com/a/comment.php?fs='+accest.split('/a/comment.php?fs=')[1].split('"')[0].replace("amp;", '')
@@ -243,19 +302,21 @@ class buffcmt:
                     'comment_text': f'{self.cmt[self.doicmt]}',
                 }
                 
-                requests.post(nodecmt, data=data,cookies=self.cookies, headers=self.headers)
+                requests.post(nodecmt, data=data,cookies=self.cookies, headers=self.headers,proxies=proxy)
                 c_user=  self.ck.split('c_user=')[1].split(';')[0]
-                
-                tree.insert("", "end", values=(self.stt+1,c_user,self.ck,id,self.cmt[self.doicmt],f'{i+1}/{socmt}','Buff Success'))
-                
+                try:
+                    tree.insert("", "end", values=(self.stt+1,c_user,self.ck,id,self.cmt[self.doicmt],f'{i+1}/{socmt}','Buff Success','',self.proxys))
+                except:
+                    tree.insert("", "end", values=(self.stt+1,c_user,self.ck,id,self.cmt[self.doicmt],f'{i+1}/{socmt}','Buff Success',''))
+                    
                 self.buffsuccess += 1
                 label1 = tk.Label(thongtin, text=f"{self.buffsuccess}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
                 label1.place(x=85,y=35)
                 
-                delay = tree.insert("", "end", values=('','','','','','',int(dlay)))
+                delay = tree.insert("", "end", values=('','','','','','','',int(dlay)))
 
                 for ii in range(int(dlay)):
-                    tree.item(delay, values=(self.stt+2,'','','','','',int(dlay)-ii))
+                    tree.item(delay, values=(self.stt+2,'','','','','','',int(dlay)-ii))
                     sleep(1)
                 tree.delete(delay)
                 self.doicmt += 1
@@ -268,6 +329,10 @@ class buffcmt:
                 if self.print_count % self.doick  == 0:
                     self.doic = (self.doic + 1) % len(self.lckie)
                     self.ck = self.lckie[self.doic]
+                    try:
+                        self.proxys = self.proxy[self.doic].split()[2]
+                    except:
+                        self.proxys = 0
                     self.update_cookies()
             except:
                 self.bufferror += 1
@@ -278,6 +343,10 @@ class buffcmt:
                 if self.print_count % self.doick == 0:
                     self.doic = (self.doic + 1) % len(self.lckie)
                     self.ck = self.lckie[self.doic]
+                    try:
+                        self.proxys = self.proxy[self.doic].split()[2]
+                    except:
+                        self.proxys = 0
                     self.update_cookies()
         print(socmt)
         for i in range(int(socmt)):

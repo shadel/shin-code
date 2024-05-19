@@ -10,6 +10,7 @@ import os
 import gop
 import threading
 import subprocess
+import re
 
 
 class api:
@@ -115,12 +116,31 @@ class api:
                 'fr': self.ck.split('fr=')[1].split(';')[0],
             }
         try:
-            proxy = lckie[self.i].split()[2]
-            proxy = {
-                "http": f"http://{proxy}",
-                "https": f"http://{proxy}"
-            }
+             
+   
+            proxys = lckie[self.i].split()[2]
             
+            proxy = {
+                "http": f"http://{proxys}",
+                "https": f"http://{proxys}"
+            }
+            try:
+                res = requests.get("https://www.facebook.com/",
+                                proxies=proxy)
+                if res.status_code == 200:
+                    proxy = proxy
+                else:
+                    msg_box = tk.messagebox.showinfo(
+                        "Thông Báo",
+                        f"Proxy {proxy} DIE",
+                    )
+            except:
+                msg_box = tk.messagebox.showinfo(
+                    "Thông Báo",
+                    f"Proxy {proxy} DIE",
+                )
+            
+    
         except:
             proxy = {}
         with open('access_tokenacc.txt','r') as f:
@@ -157,7 +177,7 @@ class api:
             try:
                 with open('cookiepage.txt','a') as f:
                     try:
-                        f.write(f'{self.idpage[i]} {self.cookiepage[i]} {lckie[self.i].split()[3]}\n')
+                        f.write(f'{self.idpage[i]} {self.cookiepage[i]} {lckie[self.i].split()[2]}\n')
                     except:
                         f.write(f'{self.idpage[i]} {self.cookiepage[i]} \n')
                     f.close()
@@ -167,7 +187,7 @@ class api:
             except:
                 with open('cookiepage.txt','w') as f:
                     try:
-                        f.write(f'{self.idpage[i]} {self.cookiepage[i]} {lckie[self.i].split()[3]}\n')
+                        f.write(f'{self.idpage[i]} {self.cookiepage[i]} {lckie[self.i].split()[2]}\n')
                     except:
                         f.write(f'{self.idpage[i]} {self.cookiepage[i]} \n')
                 with open('tokenpage.txt','w') as f:
@@ -181,15 +201,22 @@ class api:
         with open('acc.txt','r') as f:
             f = f.readlines()
         try:
-            self.saveaccandpage += f'{f[self.i].split()[0]} {f[self.i].split()[1]} {len(self.idpage)} {lckie[self.i].split()[3]}\n'
+            with open('lenpage.txt','a') as f:
+                f.write(f'{len(self.idpage)}\n')
+                f.close()
         except:
-            self.saveaccandpage += f'{f[self.i].split()[0]} {f[self.i].split()[1]} {len(self.idpage)}\n'
-        if self.i == len(f)-1:
+            with open('lenpage.txt','w') as f:
+                f.write(f'{len(self.idpage)}\n')
+                f.close()
+        try:
+            self.saveaccandpage += f'{lckie[self.i].split()[0]} {lckie[self.i].split()[1]} {lckie[self.i].split()[2]}\n'
+        except:
+            self.saveaccandpage += f'{lckie[self.i].split()[0]} {lckie[self.i].split()[1]} \n'
+        if self.i == len(lckie)-1:
             os.remove('acc.txt')
             with open('acc.txt','w') as f:
                 f.write(self.saveaccandpage)
                 f.close()
-
     def getnewtoken(self,acc,tree,thongtincookie1):
         # try:
             self.idpage = []
@@ -212,16 +239,36 @@ class api:
                     'fr': self.ck.split('fr=')[1].split(';')[0],
                 }
             try:
-                proxy = acc[self.i].split()[2]
-                print(proxy)
-                proxy = {
-                    "http": f"http://{proxy}",
-                    "https": f"http://{proxy}"
-                }
+             
+                try:
+                    proxys = acc[self.i].split()[3]
+                except:
+                    proxys = acc[self.i].split()[2]
                 
+                proxy = {
+                    "http": f"http://{proxys}",
+                    "https": f"http://{proxys}"
+                }
+                try:
+                    res = requests.get("https://www.facebook.com/",
+                                    proxies=proxy)
+                    if res.status_code == 200:
+                        proxy = proxy
+                    else:
+                        msg_box = tk.messagebox.showinfo(
+                            "Thông Báo",
+                            f"Proxy {proxy} DIE",
+                        )
+                except:
+                    msg_box = tk.messagebox.showinfo(
+                        "Thông Báo",
+                        f"Proxy {proxy} DIE",
+                    )
+                
+        
             except:
                 proxy = {}
-            re = requests.get(f'https://testmien.x10.bz/api/api404team/16token.php?cookie={self.ck}&type=5',).json()
+            re = requests.get(f'https://testmien.x10.bz/api/api404team/16token.php?cookie={self.ck}&type=5').json()
             # try:
             name = re['name']
             uid = re['uid']
@@ -230,16 +277,21 @@ class api:
             # Thay đổi giá trị của cột thứ 3 trong mỗi dòng
             response = requests.get('https://www.facebook.com/pages/?category=your_pages&ref=bookmarks', cookies=self.cookies, headers=self.headers,proxies=proxy).text
             id = response.split()
+          
             for i in id:
-                import re
                 if '"is_profile_plus":true' in i:
-                    match = re.search(r'"id":"(\d+)"', i)
+                    ids = re.findall(r'"is_profile_plus":true,"id":"(\d+)"', i)
 
-                    if match:
-                        result = match.group(1)
-                        self.idpage.append(result)
-            tree.item(f'I00{self.i+1}', values=(current_values[0], name, current_values[2], current_values[3], f"{access_token}", f"{len(self.idpage)}",'GetThanhCong',current_values[7]))
-
+                    # In ra các giá trị id tìm được
+                    for id_value in ids:
+                        self.idpage.append(id_value)
+            try:
+                tree.item(f'I00{self.i+1}', values=(current_values[0], name, current_values[2], current_values[3], f"{access_token}", f"{len(self.idpage)}",'GetThanhCong',current_values[7]))
+            except:
+                msg_box = tk.messagebox.showinfo(
+                        "Thông Báo",
+                        f"Vui Lòng Khởi Động Lại Tool Trước Khi Get NewToken",
+                    )
             
             
             
@@ -281,12 +333,12 @@ class api:
             thread.start()
 
     def threadgetpage(self,tree,thongtinpage):
-        try:
+        # try:
             with open('acc.txt','r') as f:
                 f = f.readlines()
             for self.i in range(len(f)):
                 thread = threading.Thread(target=self.savepage(tree,thongtinpage))
                 thread.start()
-        except:
-            tk.messagebox.showinfo(title='Lỗi', message='Không Có Cookie',)
+        # except:
+        #     tk.messagebox.showinfo(title='Lỗi', message='Không Có Cookie',)
         
