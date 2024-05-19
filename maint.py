@@ -1233,6 +1233,7 @@ from datetime import date
 re = requests.get('https://anotepad.com/notes/8fc6p68c').text
 key = (re.split('<div class="plaintext ">')[1].split('</div>')[0])
 today = date.today()
+<<<<<<< HEAD
 if ((today)  == date(2024, 5,22)) == False:
     if key == 'update':
         msg_box = tk.messagebox.showinfo(
@@ -1241,6 +1242,10 @@ if ((today)  == date(2024, 5,22)) == False:
                 )
     else:
         giaodien().tab()
+=======
+if ((today)  == date(2024, 5,20)) == False:
+    giaodien().tab()
+>>>>>>> 8eb533f99ab501e878a3e0f98184a4d4778e8bdc
 else:
     msg_box = tk.messagebox.showinfo(
         "Cảnh Báo",
