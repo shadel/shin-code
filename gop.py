@@ -264,8 +264,8 @@ class buffcmt:
                 else:
                     try:
                         proxy = {
-                        "http": f"http://{self.proxys}",
-                        "https": f"http://{self.proxys}"
+                            "http": f"http://{self.proxys}",
+                            "https": f"http://{self.proxys}"
                         }
                         try:
                             res = requests.get("https://www.facebook.com/",
@@ -484,17 +484,8 @@ class FacebookMain:
         self.bufferror = 0
         self.stt = stt
         self.__client           = requests.Session()
-        if proxy != None and ':' in proxy:
-            proxies = {
-                'http': '',
-                'https': ''
-            }
-            proxy = proxy.strip().split(':')
-            if len(proxy) > 2: proxynew = f"http://{proxy[2]}:{proxy[3]}@{proxy[0]}:{proxy[1]}"
-            else: proxynew = f"http://{proxy[0]}:{proxy[1]}"
-            for x in proxies:
-                proxies[x] = proxynew
-            self.__client.proxies = proxies
+
+        
         self.__client.headers       = {
             'authority': 'www.facebook.com',
             'accept': '*/*',
@@ -570,8 +561,17 @@ class FacebookMain:
             pass
         return False, "Cookie die"
 
-    def view_live(self,id,cookie,tree,thongtin,link: str,soview,delay,status):
+    def view_live(self,id,cookie,proxy,tree,thongtin,link: str,soview,delay,status):
         try:
+            if proxy == 0:
+                proxies = {}
+            else:
+                proxies = {
+                    "http": f"http://{proxy}",
+                    "https": f"http://{proxy}"
+                }
+
+                self.__client.proxies = proxies
             data = {    
                 'd': '{"pps":{"m":true,"pf":3368,"s":"playing","sa":2757389},"ps":{"m":true,"pf":13608,"s":"playing","sa":2757389},"si":"f15a9d1e26e924","so":"tahoe::topic_live","vi":"' + link + '","tk":"8Qv0Li7gMFJ5BBFyb1m6yBHLCpEUYQ1eOTCdZrxLR1Y1myQk+aSMWGOI+1BZoJCHIcDB2DEdv0JISR+KBV034w==","ls":true}',
                 '__user': self.idFacebook,
@@ -585,18 +585,18 @@ class FacebookMain:
             if "LIVE" in response: 
                 
                 with open('statusview.txt','a') as f:
-                    f.write(f'{id} {cookie} success\n')
+                    f.write(f'{id} {cookie} success {proxy}\n')
                     f.close()
                 return True, 'done'
 
         except:pass
         return False,'die'
 stt = 0
-def main(id,cookie, tree,thongtin,link,soview,delay,status):
+def main(id,cookie,proxy, tree,thongtin,link,soview,delay,status):
     global stt
     fb = FacebookMain(stt)
     if fb.addCookie(cookie)[0] == True:
-        stt = fb.view_live(id,cookie,tree,thongtin,link,soview,delay,status)
+        stt = fb.view_live(id,cookie,proxy,tree,thongtin,link,soview,delay,status)
         print(stt)
 def threadviewlive(tree,thongtin,link,soview,timeview,delay):
     stt = 0
@@ -613,9 +613,13 @@ def threadviewlive(tree,thongtin,link,soview,timeview,delay):
             for i in range(int(soview)):
                 cookie = cookie_lines[i].strip().split()[1]
                 id =  cookie_lines[i].strip().split()[0]
+                try:
+                    proxy =  cookie_lines[i].strip().split()[2]
+                except:
+                    proxy= 0
                 idacc.append(id)
                 stt += 1
-                threading.Thread(target=main, args=(id,cookie, tree,thongtin,link,soview,delay,status),).start()
+                threading.Thread(target=main, args=(id,cookie,proxy, tree,thongtin,link,soview,delay,status),).start()
         sleep(5)
         with open('statusview.txt','r') as f:
             status = f.readlines()
@@ -625,8 +629,10 @@ def threadviewlive(tree,thongtin,link,soview,timeview,delay):
             if 'success' in status[i].split():
                 success += 1
                 idpage.append(status[i].split()[0])
-                tree.insert("", "end", values=(i+1,status[i].split()[0],status[i].split()[1],link,f'{i+1}/{soview}',f'Buff Thành Công'))
-
+                try:
+                    tree.insert("", "end", values=(i+1,status[i].split()[0],status[i].split()[1],link,f'{i+1}/{soview}',f'Buff Thành Công',' ',status[i].split()[3]))
+                except:
+                    tree.insert("", "end", values=(i+1,status[i].split()[0],status[i].split()[1],link,f'{i+1}/{soview}',f'Buff Thành Công',' ',))
         set_bien1 = set(idacc)
         set_bien2 = set(idpage)
         error = set_bien1 - set_bien2
@@ -635,7 +641,7 @@ def threadviewlive(tree,thongtin,link,soview,timeview,delay):
         for j in range(len(error)):
             for k in range(len(cookie_lines)):
                 if (error[j] in cookie_lines[k].split()) == True:
-                    tree.insert("", "end", values=(i+j+2,error[j],cookie_lines[k].split()[1],link,f'{i+j+2}/{soview}',f'Buff Thất Bại'))
+                    tree.insert("", "end", values=(i+j+2,error[j],cookie_lines[k].split()[1],link,f'{i+j+2}/{soview}',f'Buff Thất Bại',' ',proxy))
                     errorr += 1
         label1 = tk.Label(thongtin, text=f"{success}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
         label1.place(x=85,y=35)
@@ -652,7 +658,7 @@ def threadviewlive(tree,thongtin,link,soview,timeview,delay):
         delay1 = tree.insert("", "end", values=('','','','','','',int(delay)))
 
         for ii in range(int(delay)):
-            tree.item(delay1, values=(i+j+3,'','','','','',int(delay)-ii))
+            tree.item(delay1, values=('','','','','','',int(delay)-ii))
             sleep(1)
         tree.delete(delay1)
         for item_id in tree.get_children():

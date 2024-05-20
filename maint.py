@@ -571,21 +571,21 @@ class giaodien():
         self.toggle_color(label, rainbow_colors, 0)
         soacc = 0
             
-        try:
-            with open('tokenpage.txt','r') as f:
-                showacc = f.readlines()
-            with open('lenpage.txt','r') as f:
-                lenpage = f.readlines()
-            for i in range(len(showacc)):
-                soacc += lenpage[i]
-            label1 = tk.Label(self.thongtinview, text=f"{soacc}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
-            label1.place(x=530,y=35)
-        except:
+        # try:
+        with open('tokenpage.txt','r') as f:
+            showacc = f.readlines()
+        with open('lenpage.txt','r') as f:
+            lenpage = f.readlines()
+        for i in range(len(lenpage)):
+            soacc += int(lenpage[i])
+        label1 = tk.Label(self.thongtinview, text=f"{soacc}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
+        label1.place(x=530,y=35)
+        # except:
             
 
             
-            label1 = tk.Label(self.thongtinview, text=f"0",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
-            label1.place(x=530,y=35)
+        #     label1 = tk.Label(self.thongtinview, text=f"0",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
+        #     label1.place(x=530,y=35)
     
         label1 = tk.Label(self.thongtinview, text=f"Số Page",fg='#ffff00',bg='#708090', font=("Times New Roman", 15))
         label1.place(x=500,y=0)
@@ -608,14 +608,15 @@ class giaodien():
         self.thanhchinhbuffview = ttk.Treeview(self.framerun, yscrollcommand=scrollbar.set) 
         self.thanhchinhbuffview.configure(style="Treeview", height=60)
         self.thanhchinhbuffview.pack(expand=True, fill="both")
-        self.thanhchinhbuffview["columns"] = ("one",  "three", "four", "five", 'six','seven','two')
+        self.thanhchinhbuffview["columns"] = ("one",  "three", "four", "five", 'six','seven','two','proxy')
         self.thanhchinhbuffview.column("one", width=50)
         self.thanhchinhbuffview.column("three", width=150)
-        self.thanhchinhbuffview.column("four", width=300)
+        self.thanhchinhbuffview.column("four", width=250)
         self.thanhchinhbuffview.column("five", width=150)
         self.thanhchinhbuffview.column("six", width=100)
-        self.thanhchinhbuffview.column("seven", width=200)
+        self.thanhchinhbuffview.column("seven", width=150)
         self.thanhchinhbuffview.column("two", width=50)
+        self.thanhchinhbuffview.column("proxy", width=100)
         
         self.thanhchinhbuffview.heading("one", text="Index", anchor=tk.W)
         self.thanhchinhbuffview.heading("three", text="ID Page", anchor=tk.W)
@@ -624,6 +625,7 @@ class giaodien():
         self.thanhchinhbuffview.heading("six", text="Tiến Độ", anchor=tk.W)
         self.thanhchinhbuffview.heading("seven", text="Status", anchor=tk.W)
         self.thanhchinhbuffview.heading("two", text="Delay(s)", anchor=tk.W)
+        self.thanhchinhbuffview.heading("proxy", text="Proxy", anchor=tk.W)
 
         self.thanhchinhbuffview['show'] = 'headings'
     
@@ -706,8 +708,8 @@ class giaodien():
                 showacc = f.readlines()
             with open('lenpage.txt','r') as f:
                 lenpage = f.readlines()
-            for i in range(len(showacc)):
-                soacc += lenpage[i]
+            for i in range(len(lenpage)):
+                soacc += int(lenpage[i])
             label1 = tk.Label(self.thongtinshare, text=f"{soacc}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
             label1.place(x=530,y=35)
         except:
@@ -882,23 +884,20 @@ class giaodien():
         rainbow_colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"]
         # self.toggle_color(label1, rainbow_colors, 0)
         self.toggle_color(label, rainbow_colors, 0)
-        soacc = 0
+        soacc =0
         try:
-            with open('acc.txt','r') as f:
+            with open('tokenpage.txt','r') as f:
                 showacc = f.readlines()
-            for i in range(len(showacc)):
-                try:
-                    soacc += int(showacc[i].split()[2])
 
-                    label1 = tk.Label(self.thongtincmt, text=f"{soacc}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
-                    label1.place(x=480,y=35)
-                except:
-                    
+   
+            label1 = tk.Label(self.thongtincmt, text=f"{len(showacc)}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
+            label1.place(x=480,y=35)
+        except:
+            
 
-                    
-                    label1 = tk.Label(self.thongtincmt, text=f"0",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
-                    label1.place(x=480,y=35)
-        except:pass
+            
+            label1 = tk.Label(self.thongtincmt, text=f"0",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
+            label1.place(x=480,y=35)
         
         try:
             with open('cmt.txt','r',encoding='utf-8') as f:
@@ -1036,7 +1035,7 @@ class giaodien():
                 showacc = f.readlines()
             with open('lenpage.txt','r') as f:
                 lenpage = f.readlines()
-            for i in range(len(showacc)):
+            for i in range(len(lenpage)):
                 try:
                     soacc += int(lenpage[i])
 
@@ -1233,7 +1232,6 @@ from datetime import date
 re = requests.get('https://anotepad.com/notes/8fc6p68c').text
 key = (re.split('<div class="plaintext ">')[1].split('</div>')[0])
 today = date.today()
-<<<<<<< HEAD
 if ((today)  == date(2024, 5,22)) == False:
     if key == 'update':
         msg_box = tk.messagebox.showinfo(
@@ -1242,10 +1240,6 @@ if ((today)  == date(2024, 5,22)) == False:
                 )
     else:
         giaodien().tab()
-=======
-if ((today)  == date(2024, 5,20)) == False:
-    giaodien().tab()
->>>>>>> 8eb533f99ab501e878a3e0f98184a4d4778e8bdc
 else:
     msg_box = tk.messagebox.showinfo(
         "Cảnh Báo",
