@@ -594,21 +594,21 @@ class giaodien():
         self.toggle_color(label, rainbow_colors, 0)
         soacc = 0
             
-        # try:
-        with open('tokenpage.txt','r') as f:
-            showacc = f.readlines()
-        with open('lenpage.txt','r') as f:
-            lenpage = f.readlines()
-        for i in range(len(lenpage)):
-            soacc += int(lenpage[i])
-        label1 = tk.Label(self.thongtinview, text=f"{soacc}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
-        label1.place(x=530,y=35)
-        # except:
+        try:
+            with open('tokenpage.txt','r') as f:
+                showacc = f.readlines()
+            with open('lenpage.txt','r') as f:
+                lenpage = f.readlines()
+            for i in range(len(lenpage)):
+                soacc += int(lenpage[i])
+            label1 = tk.Label(self.thongtinview, text=f"{soacc}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
+            label1.place(x=530,y=35)
+        except:
             
 
             
-        #     label1 = tk.Label(self.thongtinview, text=f"0",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
-        #     label1.place(x=530,y=35)
+            label1 = tk.Label(self.thongtinview, text=f"0",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
+            label1.place(x=530,y=35)
     
         label1 = tk.Label(self.thongtinview, text=f"Số Page",fg='#ffff00',bg='#708090', font=("Times New Roman", 15))
         label1.place(x=500,y=0)
