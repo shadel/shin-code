@@ -11,6 +11,7 @@ import os
 import gop
 import threading
 import subprocess
+import socket
 from tkinter import Toplevel, Label
 
 class giaodien():
@@ -31,7 +32,9 @@ class giaodien():
         self.tab5 = ttk.Frame(self.notebook)
         self.tab6 = ttk.Frame(self.notebook)
         self.tab7 = ttk.Frame(self.notebook)
+        # self.tab8 = ttk.Frame(self.notebook)
 
+        # self.notebook.add(self.tab8, text='Quản Lí Tool')
         self.notebook.add(self.tab1, text='Like Bằng Page')
         self.notebook.add(self.tab4, text='Cmt Bằng Page')
         self.notebook.add(self.tab6, text='Share Bằng Page')
@@ -44,6 +47,10 @@ class giaodien():
         self.print_count = 0
         self.doick = 1
         self.doic = 0
+       # Đường dẫn đến ảnh của bạn
+
+    
+
     def savecmt(self):
         cmt = self.text_area.get("1.0", "end-1c")
         
@@ -365,6 +372,13 @@ class giaodien():
         self.viewlive.pack_propagate(False)
         self.viewlive.configure(width = 1100, height = 850  )
         self.viewlive.place(x=0,y=0)      
+
+        # self.quanli = tk.Frame(self.tab8,bg='#708090',highlightbackground='black',
+        #             highlightthickness=2)
+        # self.quanli.pack(side=tk.LEFT)
+        # self.quanli.pack_propagate(False)
+        # self.quanli.configure(width = 1100, height = 850  )
+        # self.quanli.place(x=0,y=0)      
         
         self.notebook.pack(expand=True, fill='both')
         self.cookieacc()
@@ -374,10 +388,19 @@ class giaodien():
         self.cmtbangpage()
         self.shareao()
         self.viewlivestream()
+        # self.quanlitool()
         self.root.mainloop()
         
     
-    
+    # def quanlitool(self):
+    #     global context_menu
+        
+    #     self.quanlitoolframe = tk.Frame(self.getpage,bg='#2f4f4f')
+    #     self.quanlitoolframe.pack(side=tk.LEFT)
+    #     self.quanlitoolframe.pack_propagate(False)
+    #     self.quanlitoolframe.configure(width = 1100, height = 550  )
+    #     self.quanlitoolframe.place(x=0,y=0)
+
     def cookieortokenpage(self):
         global context_menu
         
@@ -1226,23 +1249,250 @@ class giaodien():
         label1.place(x=500,y=0)
 
 from datetime import date
-
-# calling the today
-# function of date class
+# try:
+    # calling the today
+    # function of date class
 re = requests.get('https://anotepad.com/notes/8fc6p68c').text
-key = (re.split('<div class="plaintext ">')[1].split('</div>')[0])
+update = (re.split('<div class="plaintext ">')[1].split('</div>')[0])
 today = date.today()
-if ((today)  == date(2024, 5,22)) == False:
-    if key == 'update':
-        msg_box = tk.messagebox.showinfo(
-                    "Thông Báo",
-                    f"Tool Đã Có Phiên Bản Mới",
+try:
+    with open('activekey.txt','r') as active:
+        key = active.readline()
+
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))  # 8.8.8.8 is a public DNS server by Google
+        local_ip = s.getsockname()[0]
+
+        re = requests.get('https://anotepad.com/notes/bgwt6amb').text
+        keyactive = (re.split('<div class="plaintext ">')[1].split('</div>')[0])
+        # Duyệt qua từng phần tử trong danh sách
+        for i in range(len(keyactive.split())):
+            if key == keyactive.split()[i]:
+                if (keyactive.split()[i+1]) == str(local_ip):
+
+                    if update == 'update':
+                        msg_box = tk.messagebox.showinfo(
+                                    "Thông Báo",
+                                    f"Tool Đã Có Phiên Bản Mới",
+                                )
+                    else:
+                        giaodien().tab()
+                else:
+                    msg_box = tk.messagebox.showinfo(
+                        "Cảnh Báo",
+                        f"Trùng Ip Vui Lòng Liên Hệ Admin Để Kích Hoạt Key Đa",
+                        icon="warning",
                 )
-    else:
-        giaodien().tab()
-else:
-    msg_box = tk.messagebox.showinfo(
-        "Cảnh Báo",
-        f"Hết Thời Gian Test Tool",
-        icon="warning",
-    )
+            
+except:
+    def checkkey():
+        root = tk.Tk()
+        root.title("INPUT KEY TOOL")
+        root.geometry("550x200")
+
+        thongtincookie = tk.Frame(root,bg='white')
+        thongtincookie.pack(side=tk.LEFT)
+        thongtincookie.pack_propagate(False)
+        thongtincookie.configure(width = 550, height = 200  )
+        thongtincookie.place(x=0,y=0)
+
+        image = Image.open("avt.png") 
+        image.thumbnail((100, 100))
+
+        # Chuyển đổi ảnh sang định dạng mà Tkinter có thể sử dụng
+        photo = ImageTk.PhotoImage(image)
+        # Tạo widget Label và gán ảnh vào đó
+        label = tk.Label(thongtincookie, image=photo)
+        label.place(x=5,y=5)
+
+        label = tk.Label(thongtincookie,text='Copyright By VoLeTrieuLan',bg='white', font=("Times New Roman", 15)).place(x=110,y=10)
+        label = tk.Label(thongtincookie,text='-- Key Được Viết Chỉ Sử Dụng Được 1 Thiết Bị Duy Nhất',bg='white', font=("Times New Roman", 12)).place(x=110,y=35)
+        label = tk.Label(thongtincookie,text='-- Muốn Kích Hoạt Key Đa Thiết Bị Vui Lòng INBOX ADMIN',bg='white', font=("Times New Roman", 12)).place(x=110,y=60)
+        label = tk.Label(thongtincookie,text='                      Thông Tin ADMIN',bg='white', font=("Times New Roman", 12)).place(x=110,y=85)
+        key= tk.StringVar()
+    
+        def savekey():
+            def savekeyinweb(key):
+                updatenew = ''
+                if key.get().strip() in key1.split():
+                    with open('activekey.txt','w') as save:
+                        save.write(f'{key.get().strip()}')
+                        save.close()
+                    for i in range(len(key1.split())):
+                        if int(len(key1.split()[i])) > 15:
+                            if key.get().strip() == str(key1.split()[i]):
+                                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                                s.connect(("8.8.8.8", 80))  # 8.8.8.8 is a public DNS server by Google
+                                local_ip = s.getsockname()[0]
+                                updatenew += f'{key1.split()[i]} {local_ip}\n'
+                            else:
+                                updatenew += f'{key1.split()[i]} '
+                        else:
+                            if int(len(key1.split()[i-1])) > (15):
+                                if int(len(updatenew.split()[-1])) < 15:
+                                    updatenew +=''
+                                else:
+                                    updatenew += f'{key1.split()[i]}\n'
+                            else:
+                                updatenew +=''
+                    # Connect to an external site to determine the IP address used for the connection
+                    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                    s.connect(("8.8.8.8", 80))  # 8.8.8.8 is a public DNS server by Google
+                    local_ip = s.getsockname()[0]
+                    cookies = {
+                        'AnotepadId': 'AA597494957B4C25A194E8521355849DA6D040732F900D71C876B59300EAA21AF501BCD5896215AD1D42327A0296D7492E7AE943B56F3B8DB1DA7426604D6AF1DDFC3DC5B91DFC1B6920C7B0CBADB6E6180421208B882540A1D27FB8A659C36B447804DA280EB4D9820BBEAE032793AA',
+                        '_au_1d': 'AU1D-0100-001696346426-VG4ZV95K-OHN9',
+                        'FCNEC': '%5B%5B%22AKsRol9iXUTJfyCMp8x64DnPto2dMYd7To7V5pdOpJP_aLolo5F3DD65xETJJM6_4VUBj_-wWoVAL7nlEuii8G2PyDKT48f8w_wkUHyUumaYmqC9rk4RqeVLqIVJhIJPUvjPVyvyMdInss0f4k4Cwt3AGW8WtdCT8Q%3D%3D%22%5D%5D',
+                        '_awl': '2.1708341301.5-89a510596215f6f512abf0ebddb0c0af-6763652d617369612d6561737431-0',
+                        '_lc2_fpi': 'd26cbca32d68--01hv5vbqfdabdv9p29y7ehpwgh',
+                        '_lc2_fpi_meta': '%7B%22w%22%3A1712814677485%7D',
+                        '_lr_env_src_ats': 'false',
+                        '_pubcid': '04425f32-5c56-45a0-ac66-0422e9f45962',
+                        '_pubcid_cst': 'zix7LPQsHA%3D%3D',
+                        'pbjs-unifiedid_cst': 'zix7LPQsHA%3D%3D',
+                        '_cc_id': 'd0e37ee34345d08a9873323c5bb187eb',
+                        'pbjs_fabrickId': '%7B%22fabrickId%22%3A%22E1%3AWC24xXZI7ltIad1lsp_cioCHJr-Qd7c5OeVyFVp1NWkLqvAaicRNRW75fwH58_6zvdErxGBIeQieVgx1ZguQkDdMpyNCZqJZsOWxglETyhw%22%7D',
+                        'pbjs_fabrickId_cst': 'zix7LPQsHA%3D%3D',
+                        '_pbjs_userid_consent_data': '3524755945110770',
+                        '_li_dcdm_c': '.anotepad.com',
+                        '_lr_retry_request': 'true',
+                        '__gads': 'ID=dfdebfb718c3532c:T=1691855447:RT=1716283382:S=ALNI_MYThIMldyeqRuCqsNvLGb_7Re3jUg',
+                        '__gpi': 'UID=00000c2b517261eb:T=1691855447:RT=1716283382:S=ALNI_MY1F6lpxRgeiuH-alF99oum_iKN3A',
+                        '__eoi': 'ID=2437adaacabb2378:T=1705723748:RT=1716283382:S=AA-AfjacSGSSF0IWdXGy3RC_dwVA',
+                        '_gid': 'GA1.2.821650073.1716283384',
+                        'panoramaId_expiry': '1716369794083',
+                        'panoramaId': '2f8b5b5aa185de3d626f76a111d9a9fb927ad2105e19af6fedeac189b2b988c3',
+                        'pbjs-unifiedid': '%7B%22TDID%22%3A%223ad9ffbf-d4a4-4937-8213-6bf51270dbca%22%2C%22TDID_LOOKUP%22%3A%22TRUE%22%2C%22TDID_CREATED_AT%22%3A%222024-04-21T09%3A23%3A14%22%7D',
+                        'pbjs-unifiedid_last': 'Tue%2C%2021%20May%202024%2009%3A23%3A13%20GMT',
+                        '_ga_FVWZ0RM4DH': 'GS1.1.1716283435.4.0.1716283435.60.0.0',
+                        '_ga_6PG3MM86KX': 'GS1.1.1716283381.75.1.1716283435.0.0.0',
+                        '_ga': 'GA1.2.1416292129.1691855444',
+                    }
+                    headers = {
+                        'accept': '*/*',
+                        'accept-language': 'vi-VN,vi;q=0.9,fr-FR;q=0.8,fr;q=0.7,en-US;q=0.6,en;q=0.5',
+                        'cache-control': 'no-cache',
+                        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        # 'cookie': 'AnotepadId=AA597494957B4C25A194E8521355849DA6D040732F900D71C876B59300EAA21AF501BCD5896215AD1D42327A0296D7492E7AE943B56F3B8DB1DA7426604D6AF1DDFC3DC5B91DFC1B6920C7B0CBADB6E6180421208B882540A1D27FB8A659C36B447804DA280EB4D9820BBEAE032793AA; _au_1d=AU1D-0100-001696346426-VG4ZV95K-OHN9; FCNEC=%5B%5B%22AKsRol9iXUTJfyCMp8x64DnPto2dMYd7To7V5pdOpJP_aLolo5F3DD65xETJJM6_4VUBj_-wWoVAL7nlEuii8G2PyDKT48f8w_wkUHyUumaYmqC9rk4RqeVLqIVJhIJPUvjPVyvyMdInss0f4k4Cwt3AGW8WtdCT8Q%3D%3D%22%5D%5D; _awl=2.1708341301.5-89a510596215f6f512abf0ebddb0c0af-6763652d617369612d6561737431-0; _lc2_fpi=d26cbca32d68--01hv5vbqfdabdv9p29y7ehpwgh; _lc2_fpi_meta=%7B%22w%22%3A1712814677485%7D; _lr_env_src_ats=false; _pubcid=04425f32-5c56-45a0-ac66-0422e9f45962; _pubcid_cst=zix7LPQsHA%3D%3D; pbjs-unifiedid_cst=zix7LPQsHA%3D%3D; _cc_id=d0e37ee34345d08a9873323c5bb187eb; pbjs_fabrickId=%7B%22fabrickId%22%3A%22E1%3AWC24xXZI7ltIad1lsp_cioCHJr-Qd7c5OeVyFVp1NWkLqvAaicRNRW75fwH58_6zvdErxGBIeQieVgx1ZguQkDdMpyNCZqJZsOWxglETyhw%22%7D; pbjs_fabrickId_cst=zix7LPQsHA%3D%3D; _pbjs_userid_consent_data=3524755945110770; _li_dcdm_c=.anotepad.com; _lr_retry_request=true; __gads=ID=dfdebfb718c3532c:T=1691855447:RT=1716283382:S=ALNI_MYThIMldyeqRuCqsNvLGb_7Re3jUg; __gpi=UID=00000c2b517261eb:T=1691855447:RT=1716283382:S=ALNI_MY1F6lpxRgeiuH-alF99oum_iKN3A; __eoi=ID=2437adaacabb2378:T=1705723748:RT=1716283382:S=AA-AfjacSGSSF0IWdXGy3RC_dwVA; _gid=GA1.2.821650073.1716283384; panoramaId_expiry=1716369794083; panoramaId=2f8b5b5aa185de3d626f76a111d9a9fb927ad2105e19af6fedeac189b2b988c3; pbjs-unifiedid=%7B%22TDID%22%3A%223ad9ffbf-d4a4-4937-8213-6bf51270dbca%22%2C%22TDID_LOOKUP%22%3A%22TRUE%22%2C%22TDID_CREATED_AT%22%3A%222024-04-21T09%3A23%3A14%22%7D; pbjs-unifiedid_last=Tue%2C%2021%20May%202024%2009%3A23%3A13%20GMT; _ga_FVWZ0RM4DH=GS1.1.1716283435.4.0.1716283435.60.0.0; _ga_6PG3MM86KX=GS1.1.1716283381.75.1.1716283435.0.0.0; _ga=GA1.2.1416292129.1691855444',
+                        'origin': 'https://anotepad.com',
+                        'pragma': 'no-cache',
+                        'priority': 'u=1, i',
+                        'referer': 'https://anotepad.com/notes/bgwt6amb',
+                        'sec-ch-ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+                        'sec-ch-ua-mobile': '?0',
+                        'sec-ch-ua-platform': '"Windows"',
+                        'sec-fetch-dest': 'empty',
+                        'sec-fetch-mode': 'cors',
+                        'sec-fetch-site': 'same-origin',
+                        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                        'x-requested-with': 'XMLHttpRequest',
+                    }
+                    data = {
+                        'number': 'bgwt6amb',
+                        'notetype': 'PlainText',
+                        'noteaccess': '2',
+                        'notepassword': '',
+                        'notequickedit': 'false',
+                        'notequickeditpassword': '',
+                        'notetitle': 'key bac',
+                        'notecontent': f'{updatenew}',
+                    }
+
+                    response = requests.post('https://anotepad.com/note/save', cookies=cookies, headers=headers, data=data)
+                    label_with_border = tk.Label(
+                        thongtincookie,
+                        text="KEY ĐÃ ĐƯỢC ACTIVE VĨNH VIÊN",bg='#90EE90',
+                        font=("Arial", 12),
+                        relief="solid",  # Kiểu viền (solid, raised, sunken, groove, ridge)
+                        bd=2,  # Độ dày viền
+                        padx=150,  # Padding ngang
+                        pady=1  # Padding dọc
+                    ).place(x=55,y=175)
+                else:
+                    msg_box = tk.messagebox.showinfo(
+                    "Cảnh Báo",
+                    f"KEY SAI",
+                    icon="warning",
+                )
+            re = requests.get('https://anotepad.com/notes/bgwt6amb').text
+            key1 = (re.split('<div class="plaintext ">')[1].split('</div>')[0])
+
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(("8.8.8.8", 80))  # 8.8.8.8 is a public DNS server by Google
+            local_ip = s.getsockname()[0]
+            
+            if len(key1.split()) >= 2:
+                for i in range(len(key1.split())):
+                    print(key1.split()[i],key.get())
+                    if str(key.get().strip()) == str(key1.split()[i]):
+                        try:
+                            if int(len(key1.split()[i+1])) < 15:
+                                if key1.split()[i+1] == local_ip:
+                                    savekeyinweb(key)
+                                            
+                                else:
+                                    label_with_border = tk.Label(
+                                        thongtincookie,
+                                        text="KEY ĐÃ DÍNH Ở MỘT IP KHÁC",bg='#FF0000',
+                                        font=("Arial", 12),
+                                        relief="solid",  # Kiểu viền (solid, raised, sunken, groove, ridge)
+                                        bd=2,  # Độ dày viền
+                                        padx=150,  # Padding ngang
+                                        pady=1  # Padding dọc
+                                    ).place(x=55,y=175)
+                        except:
+                            savekeyinweb(key)
+                    else:
+                        savekeyinweb(key)
+                    
+
+            else:
+                savekeyinweb(key)
+            
+        buttonstop =  tk.Button(thongtincookie,  text='FACEBOOK', 
+                        # command = saveproxy,
+                        fg='white',
+                        bg='#4267B2',
+                        height= 1, 
+                        width=35,).place(x=10,y=110)
+        buttonstop =  tk.Button(thongtincookie,  text='ZALO', 
+                        # command = saveproxy,
+                        fg='white',
+                        bg='#0095DA',
+                        height= 1, 
+                        width=35,).place(x=285,y=110)
+
+        label = tk.Label(thongtincookie,text='INPUT KEY: ',bg='white', font=("Times New Roman", 12)).place(x=10,y=145)
+
+        inputlink = tk.Entry(thongtincookie,textvariable=key, width=40, bd =0, font=('Arial 10'), borderwidth=2, relief="solid")
+        inputlink.place(x=110,y=145, height=23)
+
+        buttonstop =  tk.Button(thongtincookie,  text='SAVE', command=savekey,
+                        # command = saveproxy,
+                        fg='white',
+                        bg='green',
+                        height= 1, 
+                        width=10,).place(x=450,y=145)
+
+
+        label_with_border = tk.Label(
+            thongtincookie,
+            text="Chưa Kích Hoạt Key",bg='white',
+            font=("Arial", 12),
+            relief="solid",  # Kiểu viền (solid, raised, sunken, groove, ridge)
+            bd=2,  # Độ dày viền
+            padx=150,  # Padding ngang
+            pady=1  # Padding dọc
+        ).place(x=55,y=175)
+
+        # Chạy vòng lặp chính của Tkinter
+        root.mainloop()
+    checkkey()
+
+        
+# except:
+#     msg_box = tk.messagebox.showinfo(
+#             "Cảnh Báo",
+#             f"Bản Get Key Lỗi Vui Lòng Update Tool",
+#             icon="warning",
+#         )
