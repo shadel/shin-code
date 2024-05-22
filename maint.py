@@ -220,20 +220,25 @@ class giaodien():
             if (xetacc[i].split()[0] in iddetele) == False:
                 with open('acc.txt','a') as f:
                     try:
-                        f.write(f'{xetacc[i].split()[0]} {xetacc[i].split()[1]} {xetacc[i].split()[2]} {xetacc[i].split()[3]}\n')
+                        f.write(f'{xetacc[i].split()[0]} {xetacc[i].split()[1]} {xetacc[i].split()[2]} \n')
                         f.close()
                     except:
-                        f.write(f'{xetacc[i].split()[0]} {xetacc[i].split()[1]} {xetacc[i].split()[2]} \n')
+                        f.write(f'{xetacc[i].split()[0]} {xetacc[i].split()[1]}  \n')
                         f.close()
         for i in range(len(nameacc)):
             if (nameacc[i].split()[0] in iddetele) == False:
                 with open('nameacc.txt','a',encoding='utf-8') as f:
                     try:
-                        f.write(f'{nameacc[i].split()[0]} {nameacc[i].split()[1]} {nameacc[i].split()[2]} {xetacc[i].split()[3]}\n')
+                        f.write(f'{nameacc[i].split()[0]} {nameacc[i].split()[1]} {nameacc[i].split()[2]}\n')
                         f.close()
                     except:
-                        f.write(f'{nameacc[i].split()[0]} {nameacc[i].split()[1]} {nameacc[i].split()[2]} \n')
-                        f.close()
+                        try:
+                            f.write(f'{nameacc[i].split()[0]} {nameacc[i].split()[1]}\n')
+                            f.close()
+                        except:
+                            f.write(f'{nameacc[i].split()[0]} \n')
+                            f.close()
+          
 
     def proxy(self):
         new_window = Toplevel(self.showdevice,bg='#708090')
@@ -594,21 +599,21 @@ class giaodien():
         self.toggle_color(label, rainbow_colors, 0)
         soacc = 0
             
-        # try:
-        with open('tokenpage.txt','r') as f:
-            showacc = f.readlines()
-        with open('lenpage.txt','r') as f:
-            lenpage = f.readlines()
-        for i in range(len(lenpage)):
-            soacc += int(lenpage[i])
-        label1 = tk.Label(self.thongtinview, text=f"{soacc}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
-        label1.place(x=530,y=35)
-        # except:
+        try:
+            with open('tokenpage.txt','r') as f:
+                showacc = f.readlines()
+            with open('lenpage.txt','r') as f:
+                lenpage = f.readlines()
+            for i in range(len(lenpage)):
+                soacc += int(lenpage[i])
+            label1 = tk.Label(self.thongtinview, text=f"{soacc}",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
+            label1.place(x=530,y=35)
+        except:
             
 
             
-        #     label1 = tk.Label(self.thongtinview, text=f"0",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
-        #     label1.place(x=530,y=35)
+            label1 = tk.Label(self.thongtinview, text=f"0",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
+            label1.place(x=530,y=35)
     
         label1 = tk.Label(self.thongtinview, text=f"Số Page",fg='#ffff00',bg='#708090', font=("Times New Roman", 15))
         label1.place(x=500,y=0)
@@ -1070,7 +1075,9 @@ class giaodien():
                     
                     label1 = tk.Label(self.thongtin, text=f"0",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
                     label1.place(x=530,y=35)
-        except:pass
+        except:
+            label1 = tk.Label(self.thongtin, text=f"0",fg='#f0ffff',bg='#708090', font=("Times New Roman", 15))
+            label1.place(x=530,y=35)
         
         label1 = tk.Label(self.thongtin, text=f"Số Page",fg='#ffff00',bg='#708090', font=("Times New Roman", 15))
         label1.place(x=500,y=0)
@@ -1202,8 +1209,11 @@ class giaodien():
                 nameacc = f.readlines()
             with open('access_tokenacc.txt','r', encoding='utf-8') as f:
                 access_tokenacc = f.readlines()
-            with open('lenpage.txt','r') as f:
-                lenpage = f.readlines()
+            try:
+                with open('lenpage.txt','r') as f:
+                    lenpage = f.readlines()
+            except:
+                lenpage =''
             for i in range(len(showacc)):
                 try:
                     sopage += int(lenpage[i])
@@ -1326,7 +1336,13 @@ except:
                                 local_ip = s.getsockname()[0]
                                 updatenew += f'{key1.split()[i]} {local_ip}\n'
                             else:
-                                updatenew += f'{key1.split()[i]} '
+                                try:
+                                    if int(len(key1.split()[i+1])) < 15:
+                                        updatenew += f'{key1.split()[i]} '
+                                    else:
+                                        updatenew += f'{key1.split()[i]} \n'
+                                except:
+                                    updatenew += f'{key1.split()[i]} \n'
                         else:
                             if int(len(key1.split()[i-1])) > (15):
                                 if int(len(updatenew.split()[-1])) < 15:
@@ -1399,15 +1415,26 @@ except:
                     }
 
                     response = requests.post('https://anotepad.com/note/save', cookies=cookies, headers=headers, data=data)
-                    label_with_border = tk.Label(
-                        thongtincookie,
-                        text="KEY ĐÃ ĐƯỢC ACTIVE VĨNH VIÊN",bg='#90EE90',
-                        font=("Arial", 12),
-                        relief="solid",  # Kiểu viền (solid, raised, sunken, groove, ridge)
-                        bd=2,  # Độ dày viền
-                        padx=150,  # Padding ngang
-                        pady=1  # Padding dọc
-                    ).place(x=55,y=175)
+                    if key.get() == 'S0VZIENVQSBBRE1JTg==':
+                        label_with_border = tk.Label(
+                            thongtincookie,
+                            text="ĐÃ ACTIVE KEY CỦA ADMIN",bg='#90EE90',
+                            font=("Arial", 12),
+                            relief="solid",  # Kiểu viền (solid, raised, sunken, groove, ridge)
+                            bd=2,  # Độ dày viền
+                            padx=150,  # Padding ngang
+                            pady=1  # Padding dọc
+                        ).place(x=55,y=175)
+                    else:
+                        label_with_border = tk.Label(
+                            thongtincookie,
+                            text="KEY ĐÃ ĐƯỢC ACTIVE VĨNH VIÊN",bg='#90EE90',
+                            font=("Arial", 12),
+                            relief="solid",  # Kiểu viền (solid, raised, sunken, groove, ridge)
+                            bd=2,  # Độ dày viền
+                            padx=150,  # Padding ngang
+                            pady=1  # Padding dọc
+                        ).place(x=55,y=175)
                 else:
                     msg_box = tk.messagebox.showinfo(
                     "Cảnh Báo",
