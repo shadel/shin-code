@@ -33,10 +33,6 @@ jobs:
         spec: maint.spec
         path: .
 
-    - uses: montudor/action-zip@v1
-      with:
-        args: zip -qq -r shin-code.zip dist
-
     - name: Get next version
       uses: reecetech/version-increment@2024.4.3
       id: version
@@ -44,6 +40,10 @@ jobs:
         scheme: semver
         increment: patch
         use_api: true
+
+    - uses: montudor/action-zip@v1
+      with:
+        args: zip -qq -r shin-code-${{ steps.version.outputs.version }}.zip dist
 
     - name: release
       uses: actions/create-release@v1
@@ -64,6 +64,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./shin-code.zip
-        asset_name: shin-code.zip
+        asset_path: ./shin-code-${{ steps.version.outputs.version }}.zip
+        asset_name: shin-code-${{ steps.version.outputs.version }}.zip
         asset_content_type: application/zip
