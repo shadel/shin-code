@@ -6,7 +6,7 @@ import pyperclip  # Module để truy cập clipboard
 import os,json
 import threading
 from manager import manager
-from api import facebook
+from api import facebook,thread
 class giaodien():
     def __init__(self) -> None:
         self.nameacc = []
@@ -108,7 +108,7 @@ class giaodien():
             thread.start()
 
     def run(self):
-        api.thread(self.thongtinacc,self.thongtinm)
+        thread(self.thongtinacc,self.thongtinm)
         
     def threadrun(self):
         for _ in range(1):
