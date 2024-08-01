@@ -127,7 +127,7 @@ class giaodien():
                     try:
                             
                         tk , mk ,cookie, check = f[i].split('|')
-                        if check == 'Pass Success':
+                        if check.split('\n')[0] == 'Pass Success':
                             self.thongtinacc.insert("", "end", values=(i, tk,mk,cookie,'',check))
                         else:
                             self.thongtinacc.insert("", "end", values=(i, tk,'',mk,cookie,check))
