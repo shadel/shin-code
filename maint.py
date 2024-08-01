@@ -6,7 +6,6 @@ import pyperclip  # Module để truy cập clipboard
 import os,json
 import threading
 from manager import manager
-import api
 from api import facebook
 class giaodien():
     def __init__(self) -> None:
